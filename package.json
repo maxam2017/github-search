@@ -9,7 +9,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
-    "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
+    "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
@@ -21,6 +22,8 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
+    "husky": "^7.0.0",
+    "lint-staged": "^12.1.4",
     "prettier": "^2.4.1",
     "prettier-plugin-svelte": "^2.4.0",
     "svelte": "^3.44.0",
@@ -33,5 +36,11 @@
   "type": "module",
   "dependencies": {
     "lodash-es": "^4.17.21"
+  },
+  "lint-staged": {
+    "*.{js,ts,svelte}": [
+      "svelte-check",
+      "pnpm run lint"
+    ]
   }
 }
