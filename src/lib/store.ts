@@ -23,12 +23,13 @@ interface Store {
 const store = writable<Store>({ data: {}, pages: {} });
 
 export async function searchRepository(query: string): Promise<void> {
+  console.log({ query });
   if (!query) return;
 
   store.update((prevStore) => {
     return produce(prevStore, (draft) => {
       if (!draft.pages[query]) {
-        draft.pages[query] = Object.assign(DefaultPage);
+        draft.pages[query] = Object.assign({}, DefaultPage);
       }
       const page = draft.pages[query];
       page.loading = true;
@@ -83,7 +84,7 @@ const repositoryList = derived([term, store], ([$term, $store]) => {
 });
 const repositoryPage = derived([term, store], ([$term, $store]) => {
   const page = $store.pages[$term];
-  return Object.assign(DefaultPage, page);
+  return Object.assign({}, DefaultPage, page);
 });
 
 export { repositoryList, repositoryPage };
