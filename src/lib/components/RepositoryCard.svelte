@@ -13,9 +13,9 @@
       src={repository.owner.avatar_url}
       alt={repository.owner.login}
     />
-    <h2 class="text-md font-semibold text-gray-800">{repository.full_name}</h2>
+    <h2 class="text-md font-semibold text-gray-800 break-all">{repository.full_name}</h2>
   </div>
-  <div class="py-2 text-md text-gray-500">
+  <div class="py-2 text-md text-gray-500 break-all">
     {repository.description}
   </div>
   <!-- {repository.language}
