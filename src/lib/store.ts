@@ -1,4 +1,5 @@
 import produce, { setAutoFreeze } from 'immer';
+import { uniq } from 'lodash-es';
 import { derived, writable } from 'svelte/store';
 import type { Repository, Response, ResponseErrorBody } from './types';
 
@@ -11,9 +12,10 @@ interface Page {
   noMore: boolean;
   error?: string;
   index: string[];
+  page: number;
 }
 
-const DefaultPage: Page = { loading: false, fetched: false, noMore: false, index: [] };
+const DefaultPage: Page = { loading: false, fetched: false, noMore: false, index: [], page: 1 };
 
 interface Store {
   data: { [id: string]: Repository };
@@ -22,8 +24,7 @@ interface Store {
 
 const store = writable<Store>({ data: {}, pages: {} });
 
-export async function searchRepository(query: string): Promise<void> {
-  console.log({ query });
+export async function searchRepository(query: string, pageIndex = 1): Promise<void> {
   if (!query) return;
 
   store.update((prevStore) => {
@@ -36,10 +37,11 @@ export async function searchRepository(query: string): Promise<void> {
       delete page.error;
     });
   });
+
   const res = await fetch('/api/repository', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ search: query }),
+    body: JSON.stringify({ search: query, page: pageIndex }),
   });
 
   try {
@@ -56,6 +58,8 @@ export async function searchRepository(query: string): Promise<void> {
             page.index.push(`${item.id}`);
           }
           page.noMore = !json.incomplete_results;
+          page.page = pageIndex;
+          page.index = uniq(page.index);
         } else {
           const { code, message } = json as unknown as ResponseErrorBody;
           page.error = `[${code}]: ${message}`;

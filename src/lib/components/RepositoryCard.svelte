@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { repositoryList } from '$lib/store';
-
   import type { Repository } from '$lib/types';
 
   export let repository: Repository;
 </script>
 
-<li class="p-4 bg-white shadow-sm">
+<li class="p-4 bg-white shadow-sm mb-4">
   <div class="flex items-center">
     <img
       class="rounded-full mr-3"

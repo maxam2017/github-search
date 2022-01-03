@@ -3,9 +3,10 @@ import { get } from 'lodash-es';
 
 export const post: RequestHandler = async ({ body }) => {
   const search = get(body, 'search');
+  const page = get(body, 'page') || 1;
   if (!search) return { status: 400, body: { code: 400, message: 'malformed body' } };
 
-  const res = await fetch(`https://api.github.com/search/repositories?q=${search}`);
+  const res = await fetch(`https://api.github.com/search/repositories?q=${search}&page=${page}`);
   try {
     const json = await res.json();
     if (res.ok) return { body: json };
