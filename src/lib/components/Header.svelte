@@ -5,7 +5,8 @@
   let query = '';
   $: term.set(query);
 
-  const handleSearch = debounce(() => searchRepository(query), 500);
+  const handleSearch = () => searchRepository(query);
+  const handleDebouncedSearch = debounce(handleSearch, 500);
 </script>
 
 <header class="flex items-center py-4 lg:px-8 px-4 font-bold text-lg bg-white sticky top-0 shadow-sm">
@@ -17,12 +18,21 @@
     />
   </svg>
   <h1 class="hidden md:block">GitHub Search</h1>
-  <div class="relative flex-1 ml-4 mr-3 flex items-center">
+  <form action="." on:submit={(e) => e.preventDefault()} class="relative flex-1 ml-4 mr-3 flex items-center">
     <input
-      class="flex w-full p-2 rounded-md bg-gray-100 focus:bg-transparent focus:outline-none focus:ring-2"
+      type="search"
+      spellcheck="false"
+      autocapitalize="off"
+      class="appearance-none block flex w-full p-2 rounded-md bg-gray-100 focus:bg-transparent focus:outline-none focus:ring-2"
       placeholder="Search Repository ..."
       bind:value={query}
-      on:keyup={handleSearch}
+      on:keydown={(evt) => {
+        handleDebouncedSearch();
+        if (evt.key === 'Enter') {
+          handleDebouncedSearch.flush();
+          evt.currentTarget.blur();
+        }
+      }}
     />
     {#if $repositoryPage.loading}
       <svg class="absolute right-0 animate-spin -ml-1 mr-3 h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24">
@@ -34,5 +44,5 @@
         />
       </svg>
     {/if}
-  </div>
+  </form>
 </header>
