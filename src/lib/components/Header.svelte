@@ -1,12 +1,18 @@
 <script lang="ts">
   import { debounce } from 'lodash-es';
   import { searchRepository, term, repositoryPage } from '$lib/store';
+  import SearchInput from './SearchInput.svelte';
 
   let query = '';
   $: term.set(query);
 
   const handleSearch = () => searchRepository(query);
   const handleDebouncedSearch = debounce(handleSearch, 500);
+  const handleEnter = (evt: KeyboardEvent) => {
+    handleDebouncedSearch.flush();
+    const inputEl = evt.currentTarget as HTMLInputElement;
+    inputEl.blur();
+  };
 </script>
 
 <header class="flex items-center py-4 lg:px-8 px-4 font-bold text-lg bg-white sticky top-0 shadow-sm">
@@ -19,21 +25,14 @@
   </svg>
   <h1 class="hidden md:block">GitHub Search</h1>
   <form action="." on:submit={(e) => e.preventDefault()} class="relative flex-1 ml-4 mr-3 flex items-center">
-    <input
-      type="search"
-      spellcheck="false"
-      autocapitalize="off"
-      class="appearance-none block flex w-full p-2 rounded-md bg-gray-100 focus:bg-transparent focus:outline-none focus:ring-2"
-      placeholder="Search Repository ..."
+    <SearchInput
       bind:value={query}
-      on:keydown={(evt) => {
-        handleDebouncedSearch();
-        if (evt.key === 'Enter') {
-          handleDebouncedSearch.flush();
-          evt.currentTarget.blur();
-        }
-      }}
+      onKeydown={handleDebouncedSearch}
+      onEnter={handleEnter}
+      className="appearance-none block flex w-full p-2 rounded-md bg-gray-100 focus:bg-transparent focus:outline-none focus:ring-2"
+      placeholder="Search Repository ..."
     />
+
     {#if $repositoryPage.loading}
       <svg class="absolute right-0 animate-spin -ml-1 mr-3 h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
