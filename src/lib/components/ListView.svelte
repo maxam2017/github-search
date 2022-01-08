@@ -4,7 +4,7 @@
 </script>
 
 <ul class="grid">
-  {#each $repositoryList as repo (repo.id)}
+  {#each $repositoryList as repo}
     <RepositoryCard repository={repo} />
   {/each}
 </ul>

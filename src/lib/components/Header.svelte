@@ -1,7 +1,8 @@
 <script lang="ts">
   import { debounce } from 'lodash-es';
   import { searchRepository, term, repositoryPage } from '$lib/store';
-  import SearchInput from './SearchInput.svelte';
+
+  let isMobile = typeof window === 'undefined' ? true : navigator.userAgent.toLowerCase().includes('mobile');
 
   let query = '';
   $: term.set(query);
@@ -11,7 +12,7 @@
   const handleEnter = (evt: KeyboardEvent) => {
     handleDebouncedSearch.flush();
     const inputEl = evt.currentTarget as HTMLInputElement;
-    inputEl.blur();
+    if (isMobile) inputEl.blur();
   };
 </script>
 
@@ -25,12 +26,14 @@
   </svg>
   <h1 class="hidden md:block">GitHub Search</h1>
   <form action="." on:submit={(e) => e.preventDefault()} class="relative flex-1 ml-4 mr-3 flex items-center">
-    <SearchInput
-      bind:value={query}
-      onKeydown={handleDebouncedSearch}
-      onEnter={handleEnter}
-      className="appearance-none block flex w-full p-2 rounded-md bg-gray-100 focus:bg-transparent focus:outline-none focus:ring-2"
+    <input
+      class="appearance-none flex w-full p-2 rounded-md bg-gray-100 focus:bg-transparent focus:outline-none focus:ring-2"
       placeholder="Search Repository ..."
+      bind:value={query}
+      on:keydown={(evt) => {
+        handleDebouncedSearch();
+        if (evt.key === 'Enter') handleEnter(evt);
+      }}
     />
 
     {#if $repositoryPage.loading}
@@ -45,3 +48,9 @@
     {/if}
   </form>
 </header>
+
+<style>
+  input[type='search']::-webkit-search-cancel-button {
+    display: none;
+  }
+</style>
